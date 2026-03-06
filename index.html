@@ -135,45 +135,24 @@ body:before{
   transition:height 1.4s cubic-bezier(.22,.61,.36,1);
 }
 
-/* Connected hollow T handle */
+/* Single continuous hollow T handle */
 #handle{
-  position:absolute;
+  position: absolute;
   top:0;
   left:50%;
   transform:translateX(-50%);
-  width:140px;
-  height:110px;
+  width:120px;  /* slightly smaller */
+  height:100px; /* slightly smaller */
   cursor:pointer;
   pointer-events:auto;
-}
-
-/* horizontal bar */
-#handle::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  width:140px;
-  height:45px;
-  border:6px solid #ff2b2b;
-  border-radius:15px;
-  background:transparent;
-  box-shadow: inset 0 0 6px rgba(255,0,0,.4),0 0 8px rgba(255,0,0,.6);
-}
-
-/* vertical stem */
-#handle::after{
-  content:"";
-  position:absolute;
-  top:40px;
-  left:50%;
-  transform:translateX(-50%);
-  width:46px;
-  height:70px;
-  border:6px solid #ff2b2b;
-  border-radius:15px;
-  background:transparent;
-  box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
+  background: transparent;
+  border: 6px solid #ff2b2b;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(255,0,0,.4), 0 0 7px rgba(255,0,0,.6);
+  /* T shape hollow outline */
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 35%, 65% 35%, 65% 100%, 35% 100%, 35% 35%, 0% 35%
+  );
 }
 
 /* email capture */
@@ -323,8 +302,8 @@ handle.onclick = ()=>{
       if(!bgStart) bgStart = timestamp;
       const t = (timestamp - bgStart)/1000; // seconds
       const sine = Math.sin(t*0.3); // very slow pulsation
-      const b = 32 + 32*((sine+1)/2); // dark marine blue oscillation
-      document.body.style.backgroundColor = `rgb(0,0,${b})`;
+      const b = 0 + 50*((sine+1)/2); // marine blue component oscillation
+      document.body.style.backgroundColor = `rgb(0,0,${b+32})`; // base dark marine blue offset
       requestAnimationFrame(animateBackground);
   }
   requestAnimationFrame(animateBackground);
