@@ -98,7 +98,7 @@ body:before{
   font-size:11px;
   opacity:.18;
   color:#aaa;
-  transition: text-shadow 0.3s ease-in-out;
+  transition: text-shadow 0.3s ease-in-out, color 0.6s ease-in-out;
 }
 
 #c1{top:12%;left:6%}
@@ -110,7 +110,7 @@ body:before{
 /* ripcord container */
 #cord{
   position:absolute;
-  top:-300px; /* start offscreen */
+  top:0;
   left:50%;
   transform:translateX(-50%);
   z-index:20;
@@ -120,10 +120,14 @@ body:before{
   align-items:center;
 }
 
-/* wire fills top of screen */
+/* wire: always from top to handle */
 #wire{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
   width:3px;
-  height:40vh; /* 40% of viewport */
+  height:100vh; /* full viewport */
   background:repeating-linear-gradient(
     45deg,
     #dcdcdc,
@@ -131,6 +135,18 @@ body:before{
     #888 2px,
     #888 4px
   );
+  z-index:10;
+}
+
+/* handle wrapper: moves down */
+#handle-wrapper{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:absolute;
+  top:0;
+  transition:transform 1.4s cubic-bezier(.22,.61,.36,1);
+  z-index:20;
 }
 
 /* simple pulley handle */
@@ -141,7 +157,6 @@ body:before{
   border-radius:6px;
   background:transparent;
   box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
-  margin-top:-3px; /* overlap wire */
 }
 
 /* email capture */
@@ -185,8 +200,7 @@ button{
 @media (max-width:768px){
   .glitch{font-size:28px; letter-spacing:4px;}
   .clue{font-size:9px;}
-  #wire{height:35vh;}
-  #handle{width:30px; height:15px; margin-top:-2px; border:4px solid #ff2b2b;}
+  #handle{width:30px; height:15px; border:4px solid #ff2b2b;}
   #signup input{width:180px;}
   #signup button{padding:8px 16px; margin-left:4px;}
 }
@@ -207,7 +221,9 @@ CLOSE YOUR EYES AND PULL THE RIPCORD
 
 <div id="cord">
   <div id="wire"></div>
-  <div id="handle"></div>
+  <div id="handle-wrapper">
+    <div id="handle"></div>
+  </div>
 </div>
 
 <div id="signup">
@@ -226,65 +242,78 @@ INDUSTRY GIANTS // IG-001
 </audio>
 
 <script>
-const cord = document.getElementById("cord")
-const audio = document.getElementById("track")
-const clues = document.querySelectorAll(".clue")
-const signup = document.getElementById("signup")
+const handleWrapper = document.getElementById("handle-wrapper");
+const cord = document.getElementById("cord");
+const audio = document.getElementById("track");
+const clues = document.querySelectorAll(".clue");
+const signup = document.getElementById("signup");
 
-// initial drop to 40% screen
+// initial drop to 40% of viewport
 setTimeout(()=>{
-  cord.style.transition="top 1.4s cubic-bezier(.22,.61,.36,1)"
-  cord.style.top="40vh"
-},100)
+  handleWrapper.style.transform = "translateY(40vh)";
+},100);
 
-// click to retract
+// click to retract, start audio and effects
 cord.onclick = ()=>{
-  document.querySelector(".glitch").style.display="none"
-  setTimeout(()=>{signup.style.display="block"},500)
+  document.querySelector(".glitch").style.display="none";
+  setTimeout(()=>{signup.style.display="block"},500);
 
-  // retract offscreen
-  cord.style.transition="top .8s ease-in"
-  cord.style.top="-100px"
+  // retract handle
+  handleWrapper.style.transition="transform 0.8s ease-in";
+  handleWrapper.style.transform="translateY(-100px)";
 
   // audio fade in
-  let audioStarted=false
+  let audioStarted=false;
   if(!audioStarted){
-    audioStarted=true
-    audio.volume=0
-    audio.play().catch(e=>console.log(e))
-    const targetVol=0.5
-    const fadeDur=3000
-    let start=null
+    audioStarted=true;
+    audio.volume=0;
+    audio.play().catch(e=>console.log(e));
+    const targetVol=0.5;
+    const fadeDur=3000;
+    let start=null;
     function fadeIn(ts){
-      if(!start) start=ts
-      const prog=ts-start
-      audio.volume=Math.min(prog/fadeDur*targetVol,targetVol)
+      if(!start) start=ts;
+      const prog=ts-start;
+      audio.volume=Math.min(prog/fadeDur*targetVol,targetVol);
       if(prog<fadeDur) requestAnimationFrame(fadeIn)
-      else audio.volume=targetVol
+      else audio.volume=targetVol;
     }
-    requestAnimationFrame(fadeIn)
+    requestAnimationFrame(fadeIn);
   }
 
-  // glow clues loop
-  let index=0
+  // glow clues loop with color pulse
+  let index=0;
   setInterval(()=>{
-    clues.forEach(c=>c.style.textShadow="")
-    clues[index].style.textShadow="0 0 8px red,0 0 14px red"
-    index=(index+1)%clues.length
-  },1200)
+    clues.forEach(c=>{
+      c.style.textShadow="";
+      c.style.color="#aaa";
+    });
+    const clue = clues[index];
+    let t0=null;
+    function pulseColor(ts){
+      if(!t0) t0=ts;
+      const t=(ts-t0)/1000;
+      const sine=(Math.sin(t*2*Math.PI/1.2)+1)/2; // pulse ~1.2s
+      clue.style.color=`rgb(${255*sine+100}, ${255*sine+100}, ${255*sine+100})`; // frost-white/red mix
+      clue.style.textShadow=`0 0 ${4+10*sine}px red, 0 0 ${8+10*sine}px red`;
+      requestAnimationFrame(pulseColor);
+    }
+    requestAnimationFrame(pulseColor);
+    index=(index+1)%clues.length;
+  },1200);
 
   // dark blue background pulsation
-  let start=null
+  let start=null;
   function animateBG(ts){
-    if(!start) start=ts
-    const t=(ts-start)/1000
-    const sine=Math.sin(t*0.3)
-    const b=10+10*((sine+1)/2) // very dark blue
-    document.body.style.backgroundColor=`rgb(0,0,${b})`
-    requestAnimationFrame(animateBG)
+    if(!start) start=ts;
+    const t=(ts-start)/1000;
+    const sine=Math.sin(t*0.3);
+    const b=8+5*((sine+1)/2); // very dark blue
+    document.body.style.backgroundColor=`rgb(0,0,${b})`;
+    requestAnimationFrame(animateBG);
   }
-  requestAnimationFrame(animateBG)
-}
+  requestAnimationFrame(animateBG);
+};
 </script>
 
 </body>
