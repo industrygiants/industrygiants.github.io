@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Industry Giants</title>
 
 <style>
@@ -21,7 +20,9 @@ height:100vh;
 text-align:center;
 }
 
-.scanlines::before{
+/* CRT scanlines */
+
+body::before{
 content:"";
 position:fixed;
 top:0;
@@ -48,29 +49,30 @@ align-items:center;
 flex-direction:column;
 }
 
+/* TEXT */
+
 #text{
 font-size:clamp(24px,4vw,48px);
 letter-spacing:4px;
 opacity:0;
 transition:opacity 1s;
-text-shadow:
-2px 0 red,
--2px 0 cyan;
+text-shadow:2px 0 red,-2px 0 cyan;
 }
+
+/* RIPCORD */
 
 #cord{
 position:absolute;
-top:-300px;
+top:-320px;
 display:flex;
 flex-direction:column;
 align-items:center;
-transition:top 2s ease;
 }
 
 #wire{
 width:4px;
 height:220px;
-background:linear-gradient(#ddd,#aaa);
+background:linear-gradient(#ddd,#999);
 }
 
 #handle{
@@ -82,8 +84,8 @@ border-bottom:40px solid #b30000;
 background:linear-gradient(#ff3a3a,#b30000);
 cursor:pointer;
 box-shadow:
-inset 0 0 10px rgba(0,0,0,0.7),
-0 0 10px rgba(255,0,0,0.6);
+inset 0 0 10px rgba(0,0,0,.6),
+0 0 10px rgba(255,0,0,.7);
 }
 
 .jiggle{
@@ -96,10 +98,12 @@ animation:jiggle 1.2s infinite;
 100%{transform:translateY(0)}
 }
 
+/* SIGNUP */
+
 #signup{
 position:absolute;
 opacity:0;
-transition:opacity 1.5s;
+transition:opacity 1.4s;
 }
 
 input{
@@ -128,7 +132,7 @@ margin-bottom:15px;
 </style>
 </head>
 
-<body class="scanlines">
+<body>
 
 <div id="container">
 
@@ -168,20 +172,25 @@ Enter your email for your unique ID.
 
 <script>
 
-const cord=document.getElementById("cord")
-const handle=document.getElementById("handle")
-const text=document.getElementById("text")
-const signup=document.getElementById("signup")
-const audio=document.getElementById("track")
+const cord = document.getElementById("cord")
+const handle = document.getElementById("handle")
+const text = document.getElementById("text")
+const signup = document.getElementById("signup")
+const audio = document.getElementById("track")
 
-let pulled=false
+let pulled = false
+let startY = 0
+let currentPull = 0
+
+/* DESCEND FROM CEILING */
 
 function descend(){
 
-cord.style.top="120px"
+cord.style.transition = "top 2s ease"
+cord.style.top = "120px"
 
 setTimeout(()=>{
-text.style.opacity=1
+text.style.opacity = 1
 },2000)
 
 setTimeout(()=>{
@@ -190,47 +199,93 @@ handle.classList.add("jiggle")
 
 }
 
-window.onload=descend
+window.onload = descend
 
-handle.addEventListener("click",pull)
+/* DRAG INTERACTION */
 
-function pull(){
+handle.addEventListener("mousedown",startPull)
+handle.addEventListener("touchstart",startPull)
 
-if(pulled)return
-pulled=true
+function startPull(e){
+
+if(pulled) return
 
 handle.classList.remove("jiggle")
 
-cord.style.top="-300px"
+startY = e.touches ? e.touches[0].clientY : e.clientY
+
+document.addEventListener("mousemove",pullMove)
+document.addEventListener("touchmove",pullMove)
+
+document.addEventListener("mouseup",releasePull)
+document.addEventListener("touchend",releasePull)
+
+}
+
+function pullMove(e){
+
+let y = e.touches ? e.touches[0].clientY : e.clientY
+currentPull = y - startY
+
+if(currentPull < 0) currentPull = 0
+if(currentPull > 180) currentPull = 180
+
+cord.style.transform = `translateY(${currentPull}px)`
+
+}
+
+function releasePull(){
+
+document.removeEventListener("mousemove",pullMove)
+document.removeEventListener("touchmove",pullMove)
+
+document.removeEventListener("mouseup",releasePull)
+document.removeEventListener("touchend",releasePull)
+
+if(currentPull > 120){
+triggerRipcord()
+}else{
+cord.style.transform = "translateY(0)"
+}
+
+}
+
+/* SNAP UPWARD */
+
+function triggerRipcord(){
+
+pulled = true
+
+cord.style.transition = "transform .6s ease, top .8s ease"
+cord.style.transform = "translateY(-450px)"
+cord.style.top = "-450px"
 
 fadeAudio()
 
 setTimeout(()=>{
-
-text.style.opacity=0
-
-signup.style.opacity=1
-
+text.style.opacity = 0
+signup.style.opacity = 1
 generateID()
-
-},1500)
+},1400)
 
 }
 
+/* AUDIO FADE */
+
 function fadeAudio(){
 
-audio.volume=0
+audio.volume = 0
 audio.play()
 
-let v=0
+let v = 0
 
-let fade=setInterval(()=>{
+let fade = setInterval(()=>{
 
-v+=0.02
-audio.volume=v
+v += 0.02
+audio.volume = v
 
-if(v>=0.5){
-audio.volume=0.5
+if(v >= 0.5){
+audio.volume = 0.5
 clearInterval(fade)
 }
 
@@ -238,17 +293,16 @@ clearInterval(fade)
 
 }
 
+/* ID SYSTEM */
+
 async function generateID(){
 
-const res=await fetch("https://api.countapi.xyz/hit/industry-giants/ripcord")
+const res = await fetch("https://api.countapi.xyz/hit/industry-giants/ripcord")
+const data = await res.json()
 
-const data=await res.json()
+const id = "IG-" + String(data.value).padStart(3,"0")
 
-const id="IG-"+String(data.value).padStart(3,"0")
-
-document.getElementById("fanID").value=id
-
-window.generatedID=id
+document.getElementById("fanID").value = id
 
 }
 
