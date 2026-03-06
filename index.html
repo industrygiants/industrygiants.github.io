@@ -110,7 +110,7 @@ body:before{
 /* ripcord container */
 #cord{
   position:absolute;
-  top:0; /* start at very top */
+  top:-300px; /* start offscreen */
   left:50%;
   transform:translateX(-50%);
   z-index:20;
@@ -118,13 +118,12 @@ body:before{
   display:flex;
   flex-direction:column;
   align-items:center;
-  transition:top 1.4s cubic-bezier(.22,.61,.36,1);
 }
 
 /* wire fills top of screen */
 #wire{
   width:3px;
-  height:calc(40vh - 20px); /* 40% of screen minus handle height */
+  height:40vh; /* 40% of viewport */
   background:repeating-linear-gradient(
     45deg,
     #dcdcdc,
@@ -134,7 +133,7 @@ body:before{
   );
 }
 
-/* pulley handle */
+/* simple pulley handle */
 #handle{
   width:40px;
   height:20px;
@@ -186,7 +185,7 @@ button{
 @media (max-width:768px){
   .glitch{font-size:28px; letter-spacing:4px;}
   .clue{font-size:9px;}
-  #wire{height:calc(35vh - 15px);}
+  #wire{height:35vh;}
   #handle{width:30px; height:15px; margin-top:-2px; border:4px solid #ff2b2b;}
   #signup input{width:180px;}
   #signup button{padding:8px 16px; margin-left:4px;}
@@ -232,16 +231,20 @@ const audio = document.getElementById("track")
 const clues = document.querySelectorAll(".clue")
 const signup = document.getElementById("signup")
 
-// initial drop
+// initial drop to 40% screen
 setTimeout(()=>{
-  cord.style.top="0"; // ensure starts at top
+  cord.style.transition="top 1.4s cubic-bezier(.22,.61,.36,1)"
+  cord.style.top="40vh"
 },100)
 
-// pull click
+// click to retract
 cord.onclick = ()=>{
-  // move slightly down (optional effect) or keep at top
   document.querySelector(".glitch").style.display="none"
   setTimeout(()=>{signup.style.display="block"},500)
+
+  // retract offscreen
+  cord.style.transition="top .8s ease-in"
+  cord.style.top="-100px"
 
   // audio fade in
   let audioStarted=false
@@ -270,13 +273,13 @@ cord.onclick = ()=>{
     index=(index+1)%clues.length
   },1200)
 
-  // background pulsation
+  // dark blue background pulsation
   let start=null
   function animateBG(ts){
     if(!start) start=ts
     const t=(ts-start)/1000
     const sine=Math.sin(t*0.3)
-    const b=32+50*((sine+1)/2)
+    const b=10+10*((sine+1)/2) // very dark blue
     document.body.style.backgroundColor=`rgb(0,0,${b})`
     requestAnimationFrame(animateBG)
   }
