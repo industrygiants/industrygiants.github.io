@@ -18,6 +18,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 height:100vh;
+transition: background 1s linear;
 }
 
 /* scanlines */
@@ -101,6 +102,7 @@ position:absolute;
 font-size:11px;
 opacity:.18;
 color:#aaa;
+transition: text-shadow 0.3s ease-in-out;
 }
 
 #c1{top:12%;left:6%}
@@ -155,10 +157,12 @@ top:0;
 width:140px;
 height:45px;
 border-radius:30px;
-background:linear-gradient(#ff2b2b,#a40000);
+/* hollow red plastic look */
+background:transparent;
+border: 6px solid #ff2b2b;
 box-shadow:
-inset 0 0 12px rgba(0,0,0,.7),
-0 0 14px rgba(255,0,0,.8);
+inset 0 0 6px rgba(255,0,0,.4),
+0 0 8px rgba(255,0,0,.6);
 }
 
 .stem{
@@ -169,10 +173,11 @@ transform:translateX(-50%);
 width:46px;
 height:70px;
 border-radius:25px;
-background:linear-gradient(#ff2b2b,#a40000);
+background:transparent;
+border: 6px solid #ff2b2b;
 box-shadow:
-inset 0 0 10px rgba(0,0,0,.7),
-0 0 10px rgba(255,0,0,.8);
+inset 0 0 5px rgba(255,0,0,.4),
+0 0 6px rgba(255,0,0,.6);
 }
 
 /* email capture */
@@ -269,6 +274,7 @@ const handle = document.getElementById("handle")
 const wire = document.getElementById("wire")
 const signup = document.getElementById("signup")
 const audio = document.getElementById("track")
+const clues = document.querySelectorAll(".clue")
 
 const DROP = 260
 
@@ -299,7 +305,9 @@ signup.style.display="block"
 
 /* AUDIO FADE-IN */
 
-if (!audio.playing) {
+let audioStarted = false
+if(!audioStarted){
+    audioStarted = true
     audio.volume = 0;
     audio.play().catch(e => console.log("Autoplay blocked:", e));
 
@@ -321,6 +329,30 @@ if (!audio.playing) {
 
     requestAnimationFrame(fadeIn)
 }
+
+/* CRYPTIC MESSAGES GLOW LOOP */
+
+let clueIndex = 0;
+
+function glowClues() {
+    clues.forEach((c,i)=> c.style.textShadow=""); // reset all
+    clues[clueIndex].style.textShadow="0 0 8px red,0 0 14px red";
+    clueIndex = (clueIndex+1) % clues.length;
+}
+
+const clueInterval = setInterval(glowClues, 1200);
+
+/* BACKGROUND WAVE GLOW */
+
+let bgStart = null;
+function animateBackground(timestamp){
+    if(!bgStart) bgStart = timestamp;
+    const progress = (timestamp - bgStart)/1000; // seconds
+    const intensity = 0.05 + 0.1*Math.sin(progress*1.2); // slow pulsation
+    document.body.style.backgroundColor = `rgba(0,0,32,${intensity})`;
+    requestAnimationFrame(animateBackground);
+}
+requestAnimationFrame(animateBackground);
 
 }
 
