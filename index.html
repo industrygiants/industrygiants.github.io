@@ -52,6 +52,8 @@ body:before{
   text-align:center;
   white-space:nowrap;
 }
+
+/* glitch layers */
 .glitch:before,
 .glitch:after{
   content:attr(data-text);
@@ -73,6 +75,7 @@ body:before{
   clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);
   animation:glitch2 2s infinite linear alternate-reverse;
 }
+
 @keyframes glitch1{
 0%{transform:translate(0)}
 20%{transform:translate(-2px,2px)}
@@ -97,172 +100,51 @@ body:before{
   opacity:.18;
   color:#aaa;
   transition:text-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
-  pointer-events:none;
 }
 
-/* ripcord container */
-#cord{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:20;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-/* wire */
-#wire{
-  width:3px;
-  background:repeating-linear-gradient(
-    45deg,
-    #dcdcdc,
-    #dcdcdc 2px,
-    #888 2px,
-    #888 4px
-  );
-}
-
-/* handle wrapper */
-#handle-wrapper{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  position:absolute;
-  top:-100px;
-  transition:top 1.4s cubic-bezier(.22,.61,.36,1);
-}
-
-/* simple pulley handle */
-#handle{
-  width:40px;
-  height:20px;
-  border:5px solid #ff2b2b;
-  border-radius:6px;
-  background:transparent;
-  box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
-}
-
-/* email capture */
-#signup{
-  position:absolute;
-  bottom:10%;
-  left:50%;
-  transform:translateX(-50%);
-  display:none;
-  text-align:center;
-  z-index:50;
-}
-input{
-  background:#000;
-  border:1px solid #444;
-  color:#fff;
-  padding:10px;
-  font-family:inherit;
-  width:260px;
-}
-button{
-  background:#111;
-  border:1px solid #555;
-  color:#fff;
-  padding:10px 20px;
-  margin-left:6px;
-  cursor:pointer;
-}
-
-/* footer */
-#footer{
-  position:absolute;
-  bottom:2%;
-  font-size:10px;
-  opacity:.25;
-  letter-spacing:3px;
-}
-
-/* MOBILE RESPONSIVE */
-@media (max-width:768px){
-  .glitch{
-    font-size:32px;
-    letter-spacing:3px;
-    top:40%;
-  }
-  #handle{width:35px; height:18px; border:4px solid #ff2b2b;}
-  #signup input{width:180px;}
-  #signup button{padding:8px 16px; margin-left:4px;}
-}
-</style>
-</head>
-<body>
-
-<div class="glitch" data-text="CLOSE YOUR EYES AND PULL THE RIPCORD">
-CLOSE YOUR EYES AND PULL THE RIPCORD
-</div>
-
-<div class="clue" id="c1">working so late on the corporate shift</div>
-<div class="clue" id="c2">she cried all night</div>
-<div class="clue" id="c3">it’s a necessary torture</div>
-<div class="clue" id="c4">no one coming to save you</div>
-<div class="clue" id="c5">registry office</div>
-
-<div id="cord">
-  <div id="wire"></div>
-  <div id="handle-wrapper">
-    <div id="handle"></div>
-  </div>
-</div>
-
-<div id="signup">
-<form action="https://formspree.io/f/xzdjpndk" method="POST">
-<input type="email" name="email" placeholder="enter email" required>
-<button>JOIN</button>
-</form>
-</div>
-
-<div id="footer">
-INDUSTRY GIANTS // IG-001
-</div>
-
-<audio id="track" loop>
-<source src="ripcord_loop.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-const handleWrapper = document.getElementById("handle-wrapper");
-const cord = document.getElementById("cord");
-const audio = document.getElementById("track");
-const wire = document.getElementById("wire");
-const clues = document.querySelectorAll(".clue");
-const signup = document.getElementById("signup");
-const glitch = document.querySelector(".glitch");
-
+/* default desktop positions */
+#c1{top:12%;left:6%}
+#c2{top:78%;left:12%}
+#c3{top:32%;right:8%}
+@@ -234,100 +236,107 @@
 // detect mobile
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// MOBILE: scatter clues randomly without overlapping each other or signup
-const maxActiveClues = 2;
-const mobileClues = Array.from(clues);
+// MOBILE OPTIMIZATION
+if(isMobile){
+  glitch.style.fontSize = "24px";
+  glitch.style.letterSpacing = "2px";
+  glitch.style.top = "45%";
+  clues.forEach(c=>{
+    c.style.fontSize="10px";
+    c.style.left="5%";
+    c.style.right="5%";
+  // BIG readable glitch text
+  glitch.style.fontSize = "32px";
+  glitch.style.letterSpacing = "3px";
+  glitch.style.top = "40%";
 
-function placeRandomClues(){
-  if(!isMobile) return;
-  // reset all
-  mobileClues.forEach(c=>{
-    c.style.display="none";
+  // SCATTER clues around screen for mobile
+  const positions = [
+    {top:"10%", left:"5%"},
+    {top:"25%", right:"5%"},
+    {top:"50%", left:"15%"},
+    {top:"65%", right:"10%"},
+    {top:"80%", left:"10%"}
+  ];
+  clues.forEach((c,i)=>{
+    c.style.fontSize="16px";
+    c.style.opacity=".18";
+    c.style.position="absolute";
+    if(positions[i].top) c.style.top=positions[i].top;
+    if(positions[i].left) c.style.left=positions[i].left;
+    if(positions[i].right) c.style.right=positions[i].right;
   });
-  const available = [...mobileClues];
-  const active = [];
-  while(active.length<maxActiveClues && available.length>0){
-    const idx = Math.floor(Math.random()*available.length);
-    const clue = available.splice(idx,1)[0];
-    // random positions avoiding signup box (bottom ~20%)
-    const top = Math.random()*70; // percent
-    const left = Math.random()*80; 
-    clue.style.top=top+"%";
-    clue.style.left=left+"%";
-    clue.style.right="auto";
-    clue.style.display="block";
-    active.push(clue);
-  }
+  document.getElementById("c1").style.top="5%";
+  document.getElementById("c2").style.top="65%";
+  document.getElementById("c3").style.top="25%";
+  document.getElementById("c4").style.top="50%";
+  document.getElementById("c5").style.top="40%";
 }
 
 // initial drop
@@ -279,30 +161,8 @@ function updateWire(){
 }
 requestAnimationFrame(updateWire);
 
-// click or drag to activate ripcord
-let dragging=false;
-let startY=0;
-handleWrapper.addEventListener("touchstart",(e)=>{
-  dragging=true;
-  startY=e.touches[0].clientY;
-});
-handleWrapper.addEventListener("touchmove",(e)=>{
-  if(!dragging) return;
-  let dy = e.touches[0].clientY - startY;
-  if(dy>0) handleWrapper.style.top=Math.min(40+dy*0.1,"40vh");
-});
-handleWrapper.addEventListener("touchend",(e)=>{
-  if(dragging){
-    activateRipcord();
-    dragging=false;
-  }
-});
-handleWrapper.addEventListener("click",activateRipcord);
-
-let activated=false;
-function activateRipcord(){
-  if(activated) return;
-  activated=true;
+// click to retract, start audio and effects
+cord.onclick = ()=>{
   glitch.style.display="none";
   setTimeout(()=>{signup.style.display="block"},500);
 
@@ -311,10 +171,10 @@ function activateRipcord(){
   handleWrapper.style.top="-150px"; // off top of screen
 
   // audio fade in
-  audio.volume=0;
+  audio.volume = 0;
   audio.play().catch(e=>console.log(e));
-  const targetVol=0.5;
-  const fadeDur=3000;
+  const targetVol = 0.5;
+  const fadeDur = 3000;
   let start=null;
   function fadeIn(ts){
     if(!start) start=ts;
@@ -325,35 +185,32 @@ function activateRipcord(){
   }
   requestAnimationFrame(fadeIn);
 
-  // mobile clue randomization
-  if(isMobile){
-    setInterval(placeRandomClues,1200);
-  } else {
-    // desktop: glow clues individually
-    let index=0;
-    function pulseClues(){
-      clues.forEach(c=>{
-        c.style.color="#aaa";
-        c.style.textShadow="";
-      });
-      const clue = clues[index];
-      let t0=null;
-      function pulse(ts){
-        if(!t0) t0=ts;
-        const sine = (Math.sin((ts-t0)/600)+1)/2; // ~1.2s
-        const r = Math.floor(255*sine+100);
-        const g = Math.floor(255*sine+100);
-        const b = Math.floor(255*sine+100);
-        clue.style.color=`rgb(${r},${g},${b})`;
-        clue.style.textShadow=`0 0 ${4+10*sine}px red,0 0 ${8+10*sine}px red`;
-        requestAnimationFrame(pulse);
-      }
+  // glow clues individually
+  let index=0;
+  function pulseClues(){
+    clues.forEach(c=>{
+      c.style.color="#aaa";
+      c.style.textShadow="";
+      c.style.opacity=".18";
+    });
+    const clue = clues[index];
+    let t0=null;
+    function pulse(ts){
+      if(!t0) t0=ts;
+      const sine = (Math.sin((ts-t0)/600)+1)/2; // ~1.2s cycle
+      const r = Math.floor(255*sine + 100);
+      const g = Math.floor(255*sine + 100);
+      const b = Math.floor(255*sine + 100);
+      clue.style.color=`rgb(${r},${g},${b})`;
+      clue.style.textShadow=`0 0 ${4+10*sine}px red, 0 0 ${8+10*sine}px red`;
+      clue.style.opacity = 0.9;
       requestAnimationFrame(pulse);
-      index = (index+1)%clues.length;
-      setTimeout(pulseClues,1200);
     }
-    pulseClues();
+    requestAnimationFrame(pulse);
+    index = (index+1)%clues.length;
+    setTimeout(pulseClues,1200);
   }
+  pulseClues();
 
   // dark blue background pulsation
   let startBG=null;
@@ -361,12 +218,12 @@ function activateRipcord(){
     if(!startBG) startBG=ts;
     const t=(ts-startBG)/1000;
     const sine=Math.sin(t*0.3);
-    const b=8+3*((sine+1)/2);
+    const b = 8 + 3*((sine+1)/2); // darker blue
     document.body.style.backgroundColor=`rgb(0,0,${b})`;
     requestAnimationFrame(animateBG);
   }
   requestAnimationFrame(animateBG);
-}
+};
 </script>
 </body>
 </html>
