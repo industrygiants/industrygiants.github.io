@@ -107,23 +107,23 @@ body:before{
 #c4{bottom:8%;right:12%}
 #c5{bottom:40%;left:3%}
 
-/* ripcord */
+/* ripcord + handle as single object */
 #cord{
   position:absolute;
   top:0;
   left:50%;
   transform:translateX(-50%);
   z-index:20;
-  pointer-events:none;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
+/* wire */
 #wire{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
   width:3px;
-  height:0;
+  height:260px;
   background:repeating-linear-gradient(
     45deg,
     #dcdcdc,
@@ -131,19 +131,15 @@ body:before{
     #888 2px,
     #888 4px
   );
-  transition:height 1.4s cubic-bezier(.22,.61,.36,1);
+  transition:height .6s ease-in;
 }
 
-/* connected T-handle using pseudo-elements */
+/* handle as hollow T outline */
 #handle{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
+  position:relative;
   width:120px;
-  height:100px;
-  cursor:pointer;
-  pointer-events:auto;
+  height:60px;
+  margin-top:-6px; /* overlap slightly for connected look */
 }
 
 #handle::before{
@@ -152,23 +148,23 @@ body:before{
   top:0;
   left:0;
   width:100%;
-  height:35px;
-  border:6px solid #ff2b2b;
-  border-radius:8px;
+  height:20px;
+  border:5px solid #ff2b2b;
+  border-radius:5px;
   background:transparent;
-  box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 7px rgba(255,0,0,.6);
+  box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
 }
 
 #handle::after{
   content:"";
   position:absolute;
-  top:30px;
+  top:0;
   left:50%;
   transform:translateX(-50%);
-  width:30px;
-  height:70px;
-  border:6px solid #ff2b2b;
-  border-radius:8px;
+  width:20px;
+  height:100%;
+  border:5px solid #ff2b2b;
+  border-radius:5px;
   background:transparent;
   box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
 }
@@ -226,8 +222,8 @@ CLOSE YOUR EYES AND PULL THE RIPCORD
 <div class="clue" id="c5">registry office</div>
 
 <div id="cord">
-<div id="wire"></div>
-<div id="handle"></div>
+  <div id="wire"></div>
+  <div id="handle"></div>
 </div>
 
 <div id="signup">
@@ -246,68 +242,62 @@ INDUSTRY GIANTS // IG-001
 </audio>
 
 <script>
-const handle = document.getElementById("handle")
+const cord = document.getElementById("cord")
 const wire = document.getElementById("wire")
 const signup = document.getElementById("signup")
 const audio = document.getElementById("track")
 const clues = document.querySelectorAll(".clue")
-const DROP = 260
 
-/* cord descends initially */
+/* initial drop for wire+handle container */
 setTimeout(()=>{
-  wire.style.height = DROP + "px"
-  handle.style.top = DROP + "px"
+  cord.style.transition = "top 1.4s cubic-bezier(.22,.61,.36,1)"
+  cord.style.top = "260px"
 },1200)
 
-/* pull animation */
-handle.onclick = ()=>{
-  wire.style.transition="height .6s ease-in"
-  handle.style.transition="top .6s ease-in"
-  wire.style.height="0px"
-  handle.style.top="-140px"
+cord.onclick = ()=>{
+  cord.style.transition = "top .6s ease-in"
+  cord.style.top = "-140px"
   document.querySelector(".glitch").style.display="none"
   setTimeout(()=>{signup.style.display="block"},500)
 
-  /* AUDIO FADE-IN */
-  let audioStarted = false
+  // audio fade in
+  let audioStarted=false
   if(!audioStarted){
-    audioStarted = true
-    audio.volume = 0;
-    audio.play().catch(e => console.log("Autoplay blocked:", e));
-    const targetVolume = 0.5
-    const fadeDuration = 3000
-    let startTime = null
-    function fadeIn(timestamp){
-        if(!startTime) startTime = timestamp
-        const progress = timestamp - startTime
-        const newVol = Math.min(progress/fadeDuration*targetVolume,targetVolume)
-        audio.volume = newVol
-        if(progress<fadeDuration) requestAnimationFrame(fadeIn)
-        else audio.volume=targetVolume
+    audioStarted=true
+    audio.volume=0
+    audio.play().catch(e=>console.log(e))
+    const targetVol=0.5
+    const fadeDur=3000
+    let start=null
+    function fadeIn(ts){
+      if(!start) start=ts
+      const prog = ts-start
+      audio.volume = Math.min(prog/fadeDur*targetVol,targetVol)
+      if(prog<fadeDur) requestAnimationFrame(fadeIn)
+      else audio.volume=targetVol
     }
     requestAnimationFrame(fadeIn)
   }
 
-  /* GLOW CLUES LOOP */
-  let clueIndex=0
-  function glowClues(){
-      clues.forEach(c=>c.style.textShadow="")
-      clues[clueIndex].style.textShadow="0 0 8px red,0 0 14px red"
-      clueIndex = (clueIndex+1)%clues.length
-  }
-  setInterval(glowClues,1200)
+  // glow clues loop
+  let index=0
+  setInterval(()=>{
+    clues.forEach(c=>c.style.textShadow="")
+    clues[index].style.textShadow="0 0 8px red,0 0 14px red"
+    index=(index+1)%clues.length
+  },1200)
 
-  /* BACKGROUND PULSATION */
-  let bgStart=null
-  function animateBackground(ts){
-      if(!bgStart) bgStart=ts
-      const t=(ts-bgStart)/1000
-      const sine = Math.sin(t*0.3)
-      const b = 0 + 50*((sine+1)/2)
-      document.body.style.backgroundColor=`rgb(0,0,${b+32})`
-      requestAnimationFrame(animateBackground)
+  // background pulsate
+  let start=null
+  function animateBG(ts){
+    if(!start) start=ts
+    const t=(ts-start)/1000
+    const sine=Math.sin(t*0.3)
+    const b=32+32*((sine+1)/2)
+    document.body.style.backgroundColor=`rgb(0,0,${b})`
+    requestAnimationFrame(animateBG)
   }
-  requestAnimationFrame(animateBackground)
+  requestAnimationFrame(animateBG)
 }
 </script>
 
