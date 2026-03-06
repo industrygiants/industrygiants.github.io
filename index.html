@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ripcord</title>
+<title>INDUSTRY GIANTS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 
@@ -10,7 +12,7 @@ body{
 margin:0;
 background:#000;
 color:#fff;
-font-family:Arial, Helvetica, sans-serif;
+font-family:'Share Tech Mono',monospace;
 overflow:hidden;
 display:flex;
 align-items:center;
@@ -18,31 +20,105 @@ justify-content:center;
 height:100vh;
 }
 
-/* TEXT */
+/* scanlines */
 
-#title{
+body:before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(255,255,255,.03),
+rgba(255,255,255,.03) 1px,
+transparent 1px,
+transparent 3px
+);
+pointer-events:none;
+}
+
+/* glitch text */
+
+.glitch{
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 font-size:48px;
-letter-spacing:6px;
+letter-spacing:8px;
 text-align:center;
 white-space:nowrap;
 }
 
-/* RIPCORD CONTAINER */
+.glitch:before,
+.glitch:after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+width:100%;
+overflow:hidden;
+}
+
+.glitch:before{
+left:2px;
+text-shadow:-2px 0 red;
+clip-path:polygon(0 0,100% 0,100% 45%,0 45%);
+animation:glitch1 2s infinite linear alternate-reverse;
+}
+
+.glitch:after{
+left:-2px;
+text-shadow:-2px 0 cyan;
+clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);
+animation:glitch2 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch1{
+0%{transform:translate(0)}
+20%{transform:translate(-2px,2px)}
+40%{transform:translate(-2px,-2px)}
+60%{transform:translate(2px,2px)}
+80%{transform:translate(1px,-1px)}
+100%{transform:translate(0)}
+}
+
+@keyframes glitch2{
+0%{transform:translate(0)}
+20%{transform:translate(2px,-2px)}
+40%{transform:translate(2px,2px)}
+60%{transform:translate(-2px,-1px)}
+80%{transform:translate(1px,2px)}
+100%{transform:translate(0)}
+}
+
+/* hidden lyric fragments */
+
+.clue{
+position:absolute;
+font-size:11px;
+opacity:.18;
+color:#aaa;
+}
+
+#c1{top:12%;left:6%}
+#c2{top:78%;left:12%}
+#c3{top:32%;right:8%}
+#c4{bottom:8%;right:12%}
+#c5{bottom:40%;left:3%}
+
+/* ripcord */
 
 #cord{
 position:absolute;
 top:0;
 left:50%;
 transform:translateX(-50%);
+z-index:20;
 pointer-events:none;
-z-index:10;
 }
-
-/* WIRE */
 
 #wire{
 position:absolute;
@@ -53,15 +129,13 @@ width:3px;
 height:0;
 background:repeating-linear-gradient(
 45deg,
-#e0e0e0,
-#e0e0e0 2px,
-#9a9a9a 2px,
-#9a9a9a 4px
+#dcdcdc,
+#dcdcdc 2px,
+#888 2px,
+#888 4px
 );
 transition:height 1.4s cubic-bezier(.22,.61,.36,1);
 }
-
-/* HANDLE */
 
 #handle{
 position:absolute;
@@ -75,21 +149,17 @@ pointer-events:auto;
 transition:top 1.4s cubic-bezier(.22,.61,.36,1);
 }
 
-/* T BAR */
-
 .bar{
 position:absolute;
 top:0;
 width:140px;
 height:45px;
 border-radius:30px;
-background:linear-gradient(#ff2b2b,#b30000);
+background:linear-gradient(#ff2b2b,#a40000);
 box-shadow:
-inset 0 0 10px rgba(0,0,0,.6),
-0 0 10px rgba(255,0,0,.8);
+inset 0 0 12px rgba(0,0,0,.7),
+0 0 14px rgba(255,0,0,.8);
 }
-
-/* STEM */
 
 .stem{
 position:absolute;
@@ -99,10 +169,49 @@ transform:translateX(-50%);
 width:46px;
 height:70px;
 border-radius:25px;
-background:linear-gradient(#ff2b2b,#b30000);
+background:linear-gradient(#ff2b2b,#a40000);
 box-shadow:
-inset 0 0 10px rgba(0,0,0,.6),
+inset 0 0 10px rgba(0,0,0,.7),
 0 0 10px rgba(255,0,0,.8);
+}
+
+/* email capture */
+
+#signup{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:none;
+text-align:center;
+}
+
+input{
+background:#000;
+border:1px solid #444;
+color:#fff;
+padding:10px;
+font-family:inherit;
+width:260px;
+}
+
+button{
+background:#111;
+border:1px solid #555;
+color:#fff;
+padding:10px 20px;
+margin-left:6px;
+cursor:pointer;
+}
+
+/* cryptic footer */
+
+#footer{
+position:absolute;
+bottom:12px;
+font-size:10px;
+opacity:.25;
+letter-spacing:3px;
 }
 
 </style>
@@ -110,9 +219,19 @@ inset 0 0 10px rgba(0,0,0,.6),
 
 <body>
 
-<div id="title">
+<div class="glitch" data-text="CLOSE YOUR EYES AND PULL THE RIPCORD">
 CLOSE YOUR EYES AND PULL THE RIPCORD
 </div>
+
+<!-- cryptic fragments -->
+
+<div class="clue" id="c1">working so late on the corporate shift</div>
+<div class="clue" id="c2">she cried all night</div>
+<div class="clue" id="c3">it’s a necessary torture</div>
+<div class="clue" id="c4">no one coming to save you</div>
+<div class="clue" id="c5">registry office</div>
+
+<!-- ripcord -->
 
 <div id="cord">
 <div id="wire"></div>
@@ -123,23 +242,41 @@ CLOSE YOUR EYES AND PULL THE RIPCORD
 </div>
 </div>
 
+<!-- signup -->
+
+<div id="signup">
+
+<form action="https://formspree.io/f/YOURID" method="POST">
+
+<input type="email" name="email" placeholder="enter email" required>
+<button>JOIN</button>
+
+</form>
+
+</div>
+
+<div id="footer">
+INDUSTRY GIANTS // IG-001
+</div>
+
 <script>
 
 const handle = document.getElementById("handle")
 const wire = document.getElementById("wire")
+const signup = document.getElementById("signup")
 
-const DROP_DISTANCE = 260
+const DROP = 260
 
-/* initial drop */
+/* cord descends */
 
 setTimeout(()=>{
 
-wire.style.height = DROP_DISTANCE + "px"
-handle.style.top = DROP_DISTANCE + "px"
+wire.style.height = DROP + "px"
+handle.style.top = DROP + "px"
 
-},1000)
+},1200)
 
-/* pull action */
+/* pull */
 
 handle.onclick = ()=>{
 
@@ -148,6 +285,12 @@ handle.style.transition="top .6s ease-in"
 
 wire.style.height="0px"
 handle.style.top="-140px"
+
+document.querySelector(".glitch").style.display="none"
+
+setTimeout(()=>{
+signup.style.display="block"
+},500)
 
 }
 
