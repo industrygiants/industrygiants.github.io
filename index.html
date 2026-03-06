@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <!-- FAVICONS -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="manifest" href="site.webmanifest">
-
-<head> <!-- FAVICONS -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="manifest" href="site.webmanifest">
-
+<head>
 <meta charset="UTF-8">
 <title>INDUSTRY GIANTS</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
+<!-- FAVICONS -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
 
 <style>
 body{
@@ -57,9 +51,9 @@ body:before{
   letter-spacing:8px;
   text-align:center;
   white-space:nowrap;
-  max-width:90vw;
 }
 
+/* glitch layers */
 .glitch:before,
 .glitch:after{
   content:attr(data-text);
@@ -69,14 +63,12 @@ body:before{
   width:100%;
   overflow:hidden;
 }
-
 .glitch:before{
   left:2px;
   text-shadow:-2px 0 red;
   clip-path:polygon(0 0,100% 0,100% 45%,0 45%);
   animation:glitch1 2s infinite linear alternate-reverse;
 }
-
 .glitch:after{
   left:-2px;
   text-shadow:-2px 0 cyan;
@@ -92,7 +84,6 @@ body:before{
 80%{transform:translate(1px,-1px)}
 100%{transform:translate(0)}
 }
-
 @keyframes glitch2{
 0%{transform:translate(0)}
 20%{transform:translate(2px,-2px)}
@@ -110,7 +101,6 @@ body:before{
   color:#aaa;
   transition:text-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
 }
-
 #c1{top:12%;left:6%}
 #c2{top:78%;left:12%}
 #c3{top:32%;right:8%}
@@ -130,7 +120,7 @@ body:before{
   align-items:center;
 }
 
-/* wire: dynamic height from top to handle */
+/* wire */
 #wire{
   width:3px;
   background:repeating-linear-gradient(
@@ -142,7 +132,7 @@ body:before{
   );
 }
 
-/* handle wrapper: moves down */
+/* handle wrapper */
 #handle-wrapper{
   display:flex;
   flex-direction:column;
@@ -171,7 +161,6 @@ body:before{
   display:none;
   text-align:center;
 }
-
 input{
   background:#000;
   border:1px solid #444;
@@ -180,7 +169,6 @@ input{
   font-family:inherit;
   width:260px;
 }
-
 button{
   background:#111;
   border:1px solid #555;
@@ -190,7 +178,7 @@ button{
   cursor:pointer;
 }
 
-/* cryptic footer */
+/* footer */
 #footer{
   position:absolute;
   bottom:12px;
@@ -198,38 +186,8 @@ button{
   opacity:.25;
   letter-spacing:3px;
 }
-
-/* MOBILE RESPONSIVE */
-@media (max-width:768px){
-  .glitch{
-    font-size:clamp(16px,8vw,32px);
-    letter-spacing:clamp(2px,4vw,6px);
-    max-width:90vw;
-  }
-  .clue{
-    font-size:clamp(8px,3.5vw,12px);
-    line-height:1.2em;
-    top: auto !important;
-    bottom: auto !important;
-    left:5%;
-    right:5%;
-  }
-  #c1{top:8%;}
-  #c2{top:70%;}
-  #c3{top:25%;}
-  #c4{top:55%;}
-  #c5{top:40%;}
-  #handle{
-    width:30px;
-    height:15px;
-    border:4px solid #ff2b2b;
-  }
-  #signup input{width:70vw;}
-  #signup button{padding:8px 16px; margin-left:4px;}
-}
 </style>
 </head>
-
 <body>
 
 <div class="glitch" data-text="CLOSE YOUR EYES AND PULL THE RIPCORD">
@@ -271,6 +229,27 @@ const audio = document.getElementById("track");
 const wire = document.getElementById("wire");
 const clues = document.querySelectorAll(".clue");
 const signup = document.getElementById("signup");
+const glitch = document.querySelector(".glitch");
+
+// detect mobile
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+// MOBILE OPTIMIZATION
+if(isMobile){
+  glitch.style.fontSize = "24px";
+  glitch.style.letterSpacing = "2px";
+  glitch.style.top = "45%";
+  clues.forEach(c=>{
+    c.style.fontSize="10px";
+    c.style.left="5%";
+    c.style.right="5%";
+  });
+  document.getElementById("c1").style.top="5%";
+  document.getElementById("c2").style.top="65%";
+  document.getElementById("c3").style.top="25%";
+  document.getElementById("c4").style.top="50%";
+  document.getElementById("c5").style.top="40%";
+}
 
 // initial drop
 setTimeout(()=>{
@@ -288,7 +267,7 @@ requestAnimationFrame(updateWire);
 
 // click to retract, start audio and effects
 cord.onclick = ()=>{
-  document.querySelector(".glitch").style.display="none";
+  glitch.style.display="none";
   setTimeout(()=>{signup.style.display="block"},500);
 
   // retract handle
@@ -350,6 +329,5 @@ cord.onclick = ()=>{
   requestAnimationFrame(animateBG);
 };
 </script>
-
 </body>
 </html>
