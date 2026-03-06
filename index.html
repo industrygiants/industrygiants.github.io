@@ -110,7 +110,7 @@ body:before{
 /* ripcord + handle as single object */
 #cord{
   position:absolute;
-  top:0;
+  top:-300px; /* start offscreen */
   left:50%;
   transform:translateX(-50%);
   z-index:20;
@@ -134,36 +134,12 @@ body:before{
   );
 }
 
-/* handle as upside-down hollow T outline */
+/* simple pulley handle */
 #handle{
-  position:relative;
-  width:140px;
-  height:80px;
-  margin-top:-6px; /* overlaps wire */
-}
-
-#handle::before{
-  content:"";
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
+  width:40px;
   height:20px;
-  border:6px solid #ff2b2b;
-  border-radius:6px;
-  background:transparent;
-  box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
-}
-
-#handle::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:20px;
-  height:100%;
-  border:6px solid #ff2b2b;
+  margin-top:-3px;
+  border:5px solid #ff2b2b;
   border-radius:6px;
   background:transparent;
   box-shadow: inset 0 0 5px rgba(255,0,0,.4),0 0 6px rgba(255,0,0,.6);
@@ -211,9 +187,7 @@ button{
   .glitch{font-size:28px; letter-spacing:4px;}
   .clue{font-size:9px;}
   #wire{height:150px;}
-  #handle{width:90px; height:50px; margin-top:-5px;}
-  #handle::before{height:12px; border:4px solid #ff2b2b;}
-  #handle::after{width:14px; border:4px solid #ff2b2b;}
+  #handle{width:30px; height:15px; margin-top:-3px; border:4px solid #ff2b2b;}
   #signup input{width:180px;}
   #signup button{padding:8px 16px; margin-left:4px;}
 }
@@ -258,7 +232,7 @@ const audio = document.getElementById("track")
 const clues = document.querySelectorAll(".clue")
 const signup = document.getElementById("signup")
 
-// initial drop
+// initial drop from top
 setTimeout(()=>{
   cord.style.top="260px"
 },1200)
