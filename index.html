@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head> <!-- FAVICONS -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+
 <meta charset="UTF-8">
 <title>INDUSTRY GIANTS</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-<!-- FAVICONS -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="manifest" href="site.webmanifest">
 
 <style>
 body{
@@ -51,6 +51,7 @@ body:before{
   letter-spacing:8px;
   text-align:center;
   white-space:nowrap;
+  max-width:90vw;
 }
 
 .glitch:before,
@@ -197,11 +198,21 @@ button{
   .glitch{
     font-size:clamp(16px,8vw,32px);
     letter-spacing:clamp(2px,4vw,6px);
+    max-width:90vw;
   }
   .clue{
     font-size:clamp(8px,3.5vw,12px);
     line-height:1.2em;
+    top: auto !important;
+    bottom: auto !important;
+    left:5%;
+    right:5%;
   }
+  #c1{top:8%;}
+  #c2{top:70%;}
+  #c3{top:25%;}
+  #c4{top:55%;}
+  #c5{top:40%;}
   #handle{
     width:30px;
     height:15px;
