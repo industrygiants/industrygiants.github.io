@@ -2,25 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pull The Ripcord</title>
 
 <style>
 
 body{
 margin:0;
-background:#000;
+background:black;
 color:white;
 font-family:Arial,Helvetica,sans-serif;
+height:100vh;
 overflow:hidden;
 display:flex;
-align-items:center;
 justify-content:center;
-height:100vh;
-text-align:center;
+align-items:center;
 }
 
-/* background scan lines */
+/* scanline effect */
 
 body::after{
 content:"";
@@ -28,23 +27,23 @@ position:absolute;
 inset:0;
 background:repeating-linear-gradient(
 0deg,
-rgba(255,255,255,0.03) 0px,
-rgba(255,255,255,0.03) 2px,
+rgba(255,255,255,0.04) 0px,
+rgba(255,255,255,0.04) 2px,
 transparent 2px,
 transparent 4px
 );
 pointer-events:none;
 }
 
-/* main container */
+/* stage */
 
-.scene{
+.stage{
 position:relative;
 width:100%;
 height:100%;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 flex-direction:column;
 }
 
@@ -52,97 +51,90 @@ flex-direction:column;
 
 .cord{
 position:absolute;
-top:0;
+top:-200px;
 width:3px;
-height:40vh;
-background:linear-gradient(#bbb,#eee,#999);
+height:200px;
+background:#ddd;
+transition:top 1.2s ease;
 }
 
 /* handle */
 
 .handle{
 position:absolute;
-top:40vh;
-width:min(240px,45vw);
-height:min(140px,26vw);
+top:-20px;
+width:min(220px,40vw);
 cursor:pointer;
-transform:translateY(-50%);
 transition:transform .2s;
 }
 
-/* realistic red tubing */
-
 .handle svg{
 width:100%;
-height:100%;
-filter:drop-shadow(0 10px 12px rgba(0,0,0,.6));
+filter:drop-shadow(0 6px 10px rgba(0,0,0,.6));
 }
 
-.handle:hover{
-transform:translateY(-48%);
+/* jiggle */
+
+@keyframes jiggle{
+0%{transform:rotate(0)}
+25%{transform:rotate(2deg)}
+50%{transform:rotate(-2deg)}
+75%{transform:rotate(2deg)}
+100%{transform:rotate(0)}
+}
+
+.jiggle{
+animation:jiggle .4s infinite;
 }
 
 /* text */
 
 .text{
-position:absolute;
-top:55vh;
-font-size:min(48px,7vw);
+opacity:0;
+margin-top:200px;
+font-size:min(56px,8vw);
 letter-spacing:.15em;
-line-height:1.2;
+text-align:center;
 text-transform:uppercase;
+transition:opacity 1s;
 }
 
-/* glitch style */
-
 .glitch{
-color:#fff;
 text-shadow:
 -2px 0 red,
 2px 0 cyan;
 }
 
-/* email form */
+/* signup */
 
-form{
-margin-top:20px;
-display:none;
+.signup{
+position:absolute;
+opacity:0;
+transition:opacity 1s;
+text-align:center;
+}
+
+.signup h2{
+font-weight:normal;
+margin-bottom:20px;
 }
 
 input{
-padding:12px;
+padding:14px;
 font-size:16px;
 border:none;
 border-radius:4px;
+width:220px;
 }
 
 button{
-padding:12px 20px;
-font-size:16px;
-border:none;
+padding:14px 20px;
 background:red;
 color:white;
-cursor:pointer;
+border:none;
 border-radius:4px;
-}
-
-/* mobile adjustments */
-
-@media (max-width:600px){
-
-.text{
-font-size:8vw;
-top:60vh;
-}
-
-.cord{
-height:35vh;
-}
-
-.handle{
-top:35vh;
-}
-
+font-size:16px;
+cursor:pointer;
 }
 
 </style>
@@ -150,19 +142,17 @@ top:35vh;
 
 <body>
 
-<div class="scene">
+<div class="stage">
 
-<div class="cord"></div>
+<div class="cord" id="cord"></div>
 
-<div class="handle" id="ripcord">
-
+<div class="handle" id="handle">
 <svg viewBox="0 0 300 160">
-
 <defs>
 <linearGradient id="redtube" x1="0" x2="1">
-<stop offset="0%" stop-color="#ff3b3b"/>
-<stop offset="50%" stop-color="#d40000"/>
-<stop offset="100%" stop-color="#ff3b3b"/>
+<stop offset="0%" stop-color="#ff4444"/>
+<stop offset="50%" stop-color="#cc0000"/>
+<stop offset="100%" stop-color="#ff4444"/>
 </linearGradient>
 </defs>
 
@@ -181,23 +171,29 @@ H60
 Q30 70 30 40
 Z"
 fill="url(#redtube)"
-stroke="#8a0000"
-stroke-width="6"
-stroke-linejoin="round"/>
-
+stroke="#880000"
+stroke-width="6"/>
 </svg>
-
 </div>
 
-<div class="text glitch">
+<div class="text glitch" id="text">
 CLOSE YOUR EYES AND PULL<br>
 THE RIPCORD
 </div>
+
+<div class="signup" id="signup">
+
+<h2>
+You pulled the ripcord.<br>
+Enter your email for your unique ID.
+</h2>
 
 <form action="https://formspree.io/f/xzdjpndk" method="POST">
 <input type="email" name="email" placeholder="email address" required>
 <button>JOIN</button>
 </form>
+
+</div>
 
 <audio id="song" loop>
 <source src="sample.mp3" type="audio/mpeg">
@@ -207,23 +203,66 @@ THE RIPCORD
 
 <script>
 
-const ripcord=document.getElementById("ripcord")
-const audio=document.getElementById("song")
-const form=document.querySelector("form")
+const cord=document.getElementById("cord")
+const handle=document.getElementById("handle")
+const text=document.getElementById("text")
+const signup=document.getElementById("signup")
+const song=document.getElementById("song")
 
 let pulled=false
 
-ripcord.addEventListener("mousedown",()=>{
+/* descend animation */
 
-if(pulled)return
+setTimeout(()=>{
+cord.style.top="0"
+handle.style.top="180px"
+},200)
 
+/* show text */
+
+setTimeout(()=>{
+text.style.opacity=1
+},1400)
+
+/* idle jiggle */
+
+setTimeout(()=>{
+handle.classList.add("jiggle")
+},3500)
+
+/* pull action */
+
+handle.addEventListener("click",()=>{
+
+if(pulled) return
 pulled=true
 
-ripcord.style.transform="translateY(120px)"
+handle.classList.remove("jiggle")
 
-audio.play()
+/* cord snap upward */
 
-form.style.display="block"
+cord.style.top="-200px"
+handle.style.top="-60px"
+
+/* fade music to 50% */
+
+song.volume=0
+song.play()
+
+let fade=setInterval(()=>{
+if(song.volume<0.5){
+song.volume+=0.02
+}else{
+clearInterval(fade)
+}
+},120)
+
+/* transition to signup */
+
+setTimeout(()=>{
+text.style.opacity=0
+signup.style.opacity=1
+},1000)
 
 })
 
