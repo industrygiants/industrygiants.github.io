@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
 <meta charset="UTF-8">
 <title>INDUSTRY GIANTS</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<!-- FAVICONS -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
 
 <style>
 body{
@@ -192,10 +194,20 @@ button{
 
 /* MOBILE RESPONSIVE */
 @media (max-width:768px){
-  .glitch{font-size:28px; letter-spacing:4px;}
-  .clue{font-size:9px;}
-  #handle{width:30px; height:15px; border:4px solid #ff2b2b;}
-  #signup input{width:180px;}
+  .glitch{
+    font-size:6vw; /* scale with viewport */
+    letter-spacing:2vw;
+  }
+  .clue{
+    font-size:3vw;
+    line-height:1.2em;
+  }
+  #handle{
+    width:30px;
+    height:15px;
+    border:4px solid #ff2b2b;
+  }
+  #signup input{width:70vw;}
   #signup button{padding:8px 16px; margin-left:4px;}
 }
 </style>
