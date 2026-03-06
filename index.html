@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Industry Giants</title>
 
 <style>
 
 body{
 margin:0;
-background:black;
+background:#000;
 color:white;
 font-family:monospace;
 overflow:hidden;
 }
 
-/* scanline effect */
+/* scanlines */
 
 body::after{
 content:"";
@@ -36,7 +34,7 @@ transparent 3px
 pointer-events:none;
 }
 
-/* center text */
+/* center message */
 
 .center{
 position:absolute;
@@ -44,10 +42,9 @@ top:40%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-width:90%;
 }
 
-/* glitch text */
+/* glitch */
 
 .glitch{
 font-size:2rem;
@@ -55,8 +52,8 @@ letter-spacing:4px;
 position:relative;
 }
 
-.glitch:before,
-.glitch:after{
+.glitch::before,
+.glitch::after{
 content:attr(data-text);
 position:absolute;
 left:0;
@@ -65,63 +62,38 @@ width:100%;
 opacity:.7;
 }
 
-.glitch:before{
+.glitch::before{
 color:red;
-animation:glitch1 1s infinite;
+animation:g1 1s infinite;
 }
 
-.glitch:after{
-color:#00ffff;
-animation:glitch2 1s infinite;
+.glitch::after{
+color:cyan;
+animation:g2 1s infinite;
 }
 
-@keyframes glitch1{
+@keyframes g1{
 0%{transform:translate(2px,0)}
-25%{transform:translate(-2px,1px)}
-50%{transform:translate(-1px,-2px)}
-75%{transform:translate(2px,2px)}
+50%{transform:translate(-2px,2px)}
 100%{transform:translate(0,0)}
 }
 
-@keyframes glitch2{
+@keyframes g2{
 0%{transform:translate(-2px,0)}
-25%{transform:translate(2px,-1px)}
-50%{transform:translate(1px,2px)}
-75%{transform:translate(-2px,-2px)}
+50%{transform:translate(2px,-2px)}
 100%{transform:translate(0,0)}
 }
 
-/* ripcord */
+/* ripcord container */
 
-.ripcord{
+#ripcord{
 position:absolute;
 top:0;
 left:50%;
 transform:translateX(-50%);
-display:flex;
-flex-direction:column;
-align-items:center;
 }
 
-.cord{
-width:3px;
-height:200px;
-background:red;
-}
-
-.handle{
-width:45px;
-height:45px;
-background:red;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:grab;
-font-weight:bold;
-}
-
-/* blinds animation */
+/* blinds */
 
 #blind{
 position:fixed;
@@ -130,7 +102,7 @@ left:0;
 width:100%;
 height:100%;
 background:black;
-transition:top 1.2s ease;
+transition:top 1s ease;
 z-index:10;
 }
 
@@ -159,11 +131,9 @@ background:red;
 border:none;
 color:white;
 cursor:pointer;
-margin-left:6px;
 }
 
 </style>
-
 </head>
 <body>
 
@@ -173,15 +143,45 @@ CLOSE YOUR EYES AND PULL THE RIPCORD
 </div>
 </div>
 
-<div class="ripcord">
+<!-- RIPCORD -->
 
-<div class="cord"></div>
+<svg id="ripcord" width="120" height="500">
 
-<div class="handle" id="handle">
-T
-</div>
+<!-- cord -->
 
-</div>
+<line
+id="cord"
+x1="60"
+y1="0"
+x2="60"
+y2="200"
+stroke="url(#cordPattern)"
+stroke-width="6"
+/>
+
+<!-- T HANDLE -->
+
+<g id="handle" transform="translate(60,200)" style="cursor:grab">
+
+<rect x="-35" y="-6" width="70" height="12" rx="4" fill="#d40000"/>
+
+<rect x="-10" y="-6" width="20" height="35" rx="4" fill="#b00000"/>
+
+</g>
+
+<!-- braided cord pattern -->
+
+<defs>
+
+<linearGradient id="cordPattern" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ff3030"/>
+<stop offset="50%" stop-color="#aa0000"/>
+<stop offset="100%" stop-color="#ff3030"/>
+</linearGradient>
+
+</defs>
+
+</svg>
 
 <div id="blind"></div>
 
@@ -201,41 +201,70 @@ T
 <script>
 
 const handle=document.getElementById("handle")
+const cord=document.getElementById("cord")
 const blind=document.getElementById("blind")
 const signup=document.getElementById("signup")
 
-let startY=0
+let startY
 let pulling=false
+let base=200
+let maxPull=180
 
-handle.addEventListener("mousedown",e=>{
+function start(e){
 pulling=true
-startY=e.clientY
-})
-
-document.addEventListener("mousemove",e=>{
-if(!pulling)return
-
-let diff=e.clientY-startY
-
-if(diff>0){
-handle.style.transform="translateY("+diff+"px)"
+startY=(e.touches?e.touches[0].clientY:e.clientY)
 }
-})
 
-document.addEventListener("mouseup",()=>{
+function move(e){
+
 if(!pulling)return
+
+let y=(e.touches?e.touches[0].clientY:e.clientY)
+let diff=y-startY
+
+if(diff<0) diff=0
+if(diff>maxPull) diff=maxPull
+
+let newY=base+diff
+
+handle.setAttribute("transform","translate(60,"+newY+")")
+
+cord.setAttribute("y2",newY)
+
+}
+
+function end(){
+
+if(!pulling) return
 
 pulling=false
 
-handle.style.transform="translateY(0px)"
+let y=handle.transform.baseVal.getItem(0).matrix.f
+
+if(y>base+150){
 
 blind.style.top="0"
 
 setTimeout(()=>{
 signup.style.display="block"
-},1000)
+},900)
 
-})
+}else{
+
+handle.setAttribute("transform","translate(60,"+base+")")
+cord.setAttribute("y2",base)
+
+}
+
+}
+
+handle.addEventListener("mousedown",start)
+document.addEventListener("mousemove",move)
+document.addEventListener("mouseup",end)
+
+handle.addEventListener("touchstart",start)
+document.addEventListener("touchmove",move)
+document.addEventListener("touchend",end)
 
 </script>
 
