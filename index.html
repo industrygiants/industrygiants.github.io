@@ -1,37 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>INDUSTRY GIANTS</title>
 
-<title>pull the ripcord</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 
 <style>
 
 html,body{
 margin:0;
 padding:0;
+height:100%;
 width:100%;
 max-width:100vw;
-height:100%;
-background:#000;
-color:#fff;
-font-family:Arial,Helvetica,sans-serif;
-overflow:hidden;
 overflow-x:hidden;
+overflow-y:hidden;
+background:#000;
+color:white;
+font-family:'Share Tech Mono',monospace;
 }
 
-#container{
-position:relative;
+/* scanlines */
+
+body:before{
+content:"";
+position:fixed;
+top:0;
+left:0;
 width:100%;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(255,255,255,.03),
+rgba(255,255,255,.03) 1px,
+transparent 1px,
+transparent 3px
+);
+pointer-events:none;
 }
+
+/* glitch text */
 
 .glitch{
 position:absolute;
@@ -43,50 +59,148 @@ letter-spacing:8px;
 text-align:center;
 max-width:90vw;
 white-space:normal;
-line-height:1.4;
+line-height:1.3;
 }
 
-.glitch span{
-display:block;
-}
+/* glitch layers */
 
-#ripcord{
+.glitch:before,
+.glitch:after{
+content:attr(data-text);
 position:absolute;
-top:-200px;
+left:0;
+top:0;
+width:100%;
+overflow:hidden;
+}
+
+.glitch:before{
+left:2px;
+text-shadow:-2px 0 red;
+clip-path:polygon(0 0,100% 0,100% 45%,0 45%);
+animation:glitch1 2s infinite linear alternate-reverse;
+}
+
+.glitch:after{
+left:-2px;
+text-shadow:-2px 0 cyan;
+clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);
+animation:glitch2 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch1{
+0%{transform:translate(0)}
+25%{transform:translate(-2px,2px)}
+50%{transform:translate(-2px,-2px)}
+75%{transform:translate(2px,2px)}
+100%{transform:translate(0)}
+}
+
+@keyframes glitch2{
+0%{transform:translate(0)}
+25%{transform:translate(2px,-2px)}
+50%{transform:translate(2px,2px)}
+75%{transform:translate(-2px,-1px)}
+100%{transform:translate(0)}
+}
+
+/* clues */
+
+.clue{
+position:absolute;
+font-size:11px;
+opacity:.18;
+color:#aaa;
+transition:.3s;
+max-width:70vw;
+}
+
+#c1{top:12%;left:6%}
+#c2{top:78%;left:12%}
+#c3{top:32%;right:8%}
+#c4{bottom:8%;right:12%}
+#c5{bottom:40%;left:3%}
+
+/* ripcord */
+
+#cord{
+position:absolute;
+top:0;
 left:50%;
 transform:translateX(-50%);
-font-size:40px;
 cursor:pointer;
-user-select:none;
-transition:top .9s cubic-bezier(.25,.8,.25,1);
+display:flex;
+flex-direction:column;
+align-items:center;
+z-index:20;
 }
 
-#ripcord.pulled{
-top:44%;
+#wire{
+width:3px;
+background:repeating-linear-gradient(
+45deg,
+#dcdcdc,
+#dcdcdc 2px,
+#888 2px,
+#888 4px
+);
 }
 
-#cryptic{
+#handle-wrapper{
 position:absolute;
-bottom:12%;
+top:-120px;
+transition:top 1.4s cubic-bezier(.22,.61,.36,1);
+}
+
+#handle{
+width:40px;
+height:20px;
+border:5px solid #ff2b2b;
+border-radius:6px;
+background:transparent;
+box-shadow:0 0 6px red,inset 0 0 6px red;
+}
+
+/* signup */
+
+#signup{
+position:absolute;
+top:50%;
 left:50%;
-transform:translateX(-50%);
-font-size:12px;
-letter-spacing:4px;
-opacity:.05;
-pointer-events:none;
-width:90%;
-max-width:700px;
-line-height:1.8;
+transform:translate(-50%,-50%);
+display:none;
+text-align:center;
 }
 
-.cryptic-line{
-opacity:0;
-transition:opacity 1s;
+input{
+background:#000;
+border:1px solid #444;
+color:#fff;
+padding:10px;
+font-family:inherit;
+width:260px;
 }
 
-.cryptic-line.visible{
-opacity:.2;
+button{
+background:#111;
+border:1px solid #555;
+color:white;
+padding:10px 18px;
+margin-left:6px;
+cursor:pointer;
 }
+
+/* footer */
+
+#footer{
+position:absolute;
+bottom:10px;
+font-size:10px;
+opacity:.25;
+letter-spacing:3px;
+}
+
+/* MOBILE */
 
 @media screen and (max-width:768px){
 
@@ -94,15 +208,43 @@ opacity:.2;
 font-size:7vw;
 letter-spacing:2px;
 width:90vw;
-top:46%;
+white-space:normal;
+line-height:1.35;
+top:42%;
 }
 
-#ripcord{
-font-size:34px;
+.clue{
+font-size:14px;
+opacity:.25;
 }
 
-#ripcord.pulled{
-top:47%;
+#c1{top:8%;left:6%}
+#c2{top:24%;left:10%}
+#c3{top:64%;right:8%}
+#c4{bottom:18%;right:8%}
+#c5{bottom:10%;left:8%}
+
+#handle{
+width:48px;
+height:24px;
+}
+
+#wire{
+width:4px;
+}
+
+input{
+width:65%;
+font-size:16px;
+}
+
+button{
+font-size:16px;
+}
+
+#footer{
+font-size:9px;
+bottom:6px;
 }
 
 }
@@ -110,67 +252,120 @@ top:47%;
 </style>
 </head>
 
-
 <body>
 
-<div id="container">
-
-<div class="glitch">
-
-<span>CLOSE YOUR EYES</span>
-<span>AND PULL THE RIPCORD</span>
-
+<div class="glitch" data-text="CLOSE YOUR EYES AND PULL THE RIPCORD">
+CLOSE YOUR EYES AND PULL THE RIPCORD
 </div>
 
+<div class="clue" id="c1">working so late on the corporate shift</div>
+<div class="clue" id="c2">she cried all night</div>
+<div class="clue" id="c3">it's a necessary torture</div>
+<div class="clue" id="c4">no one coming to save you</div>
+<div class="clue" id="c5">registry office</div>
 
-<div id="ripcord">⬇</div>
-
-
-<div id="cryptic">
-
-<div class="cryptic-line">signal buried under static</div>
-<div class="cryptic-line">transmission begins when silence breaks</div>
-<div class="cryptic-line">the cord was always there</div>
-<div class="cryptic-line">did you choose or did it choose you</div>
-<div class="cryptic-line">nothing happens until it does</div>
-
+<div id="cord">
+<div id="wire"></div>
+<div id="handle-wrapper">
+<div id="handle"></div>
+</div>
 </div>
 
+<div id="signup">
+<form action="https://formspree.io/f/xzdjpndk" method="POST">
+<input type="email" name="email" placeholder="enter email" required>
+<button>JOIN</button>
+</form>
 </div>
 
+<div id="footer">
+INDUSTRY GIANTS // IG-001
+</div>
+
+<audio id="track" loop>
+<source src="ripcord_loop.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
-const ripcord=document.getElementById("ripcord")
-const lines=document.querySelectorAll(".cryptic-line")
+const handleWrapper=document.getElementById("handle-wrapper");
+const cord=document.getElementById("cord");
+const wire=document.getElementById("wire");
+const audio=document.getElementById("track");
+const clues=document.querySelectorAll(".clue");
+const signup=document.getElementById("signup");
+const glitch=document.querySelector(".glitch");
 
-let running=false
+setTimeout(()=>{
+handleWrapper.style.top="48vh";
+wire.style.height="48vh";
+},100);
 
-ripcord.onclick=()=>{
+function updateWire(){
+const rect=handleWrapper.getBoundingClientRect();
+wire.style.height=rect.top+"px";
+requestAnimationFrame(updateWire);
+}
+updateWire();
 
-if(running) return
+cord.onclick=()=>{
 
-running=true
-ripcord.classList.add("pulled")
+glitch.style.display="none";
+setTimeout(()=>signup.style.display="block",400);
 
-let i=0
+handleWrapper.style.transition="top .8s ease-in";
+handleWrapper.style.top="-150px";
 
-setInterval(()=>{
+audio.volume=0;
+audio.play();
 
-lines.forEach(l=>l.classList.remove("visible"))
+let start=null;
 
-lines[i].classList.add("visible")
+function fade(ts){
+if(!start)start=ts;
+let p=(ts-start)/3000;
+audio.volume=Math.min(p*.5,.5);
+if(p<1)requestAnimationFrame(fade);
+}
 
-i++
+requestAnimationFrame(fade);
 
-if(i>=lines.length) i=0
+let i=0;
 
-},1500)
+function glow(){
+
+clues.forEach(c=>{
+c.style.color="#aaa";
+c.style.textShadow="";
+c.style.opacity=.18;
+});
+
+const clue=clues[i];
+
+let t0=null;
+
+function pulse(ts){
+if(!t0)t0=ts;
+let s=(Math.sin((ts-t0)/600)+1)/2;
+clue.style.color=`rgb(${200+55*s},${200+55*s},${200+55*s})`;
+clue.style.textShadow=`0 0 ${8*s}px red`;
+clue.style.opacity=.9;
+requestAnimationFrame(pulse);
+}
+
+pulse();
+
+i=(i+1)%clues.length;
+
+setTimeout(glow,1200);
 
 }
 
-</script>
+glow();
 
+};
+
+</script>
 
 </body>
 </html>
