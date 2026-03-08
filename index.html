@@ -59,7 +59,10 @@ letter-spacing:8px;
 text-align:center;
 max-width:90vw;
 line-height:1.35;
-color:#e6e6e6;
+
+/* solid hazard yellow */
+color:#FFD700;
+
 animation:signalglitch 9s infinite;
 }
 
@@ -67,7 +70,7 @@ animation:signalglitch 9s infinite;
 display:block;
 }
 
-/* subtle signal glitch */
+/* subtle signal movement only (no color change) */
 
 @keyframes signalglitch{
 
@@ -76,7 +79,6 @@ display:block;
 
 93%{
 transform:translate(calc(-50% + 2px),calc(-50% - 1px));
-opacity:.9;
 }
 
 94%{
@@ -85,12 +87,10 @@ transform:translate(calc(-50% - 2px),calc(-50% + 1px));
 
 95%{
 transform:translate(-50%,-50%);
-opacity:1;
 }
 
 96%{
 transform:translate(calc(-50% + 1px),calc(-50% + 2px));
-opacity:.92;
 }
 
 97%{
@@ -293,8 +293,6 @@ const clues=document.querySelectorAll(".clue");
 const signup=document.getElementById("signup");
 const glitch=document.querySelector(".glitch");
 
-/* raise ripcord to sit between text lines */
-
 setTimeout(()=>{
 handleWrapper.style.top="46vh";
 wire.style.height="46vh";
@@ -346,8 +344,6 @@ function pulse(ts){
 if(!t0)t0=ts;
 
 let s=(Math.sin((ts-t0)/600)+1)/2;
-
-/* fade white → hazard yellow */
 
 let yellow=`rgba(255,215,0,${s})`;
 let white=`rgba(255,255,255,${1-s})`;
