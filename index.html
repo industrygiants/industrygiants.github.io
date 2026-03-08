@@ -67,7 +67,7 @@ animation:signalglitch 9s infinite;
 display:block;
 }
 
-/* subtle broadcast glitch */
+/* subtle signal glitch */
 
 @keyframes signalglitch{
 
@@ -77,7 +77,6 @@ display:block;
 93%{
 transform:translate(calc(-50% + 2px),calc(-50% - 1px));
 opacity:.9;
-text-shadow:0 0 6px #ffd23f;
 }
 
 94%{
@@ -133,8 +132,6 @@ align-items:center;
 z-index:20;
 }
 
-/* metallic wire */
-
 #wire{
 width:3px;
 background:linear-gradient(
@@ -144,8 +141,6 @@ background:linear-gradient(
 #6a6a6a
 );
 }
-
-/* handle */
 
 #handle-wrapper{
 position:absolute;
@@ -257,7 +252,7 @@ bottom:6px;
 
 <div class="glitch">
 <span>CLOSE YOUR EYES</span>
-<span>PULL THE RIPCORD</span>
+<span>AND PULL THE RIPCORD</span>
 </div>
 
 <div class="clue" id="c1">working so late on the corporate shift</div>
@@ -298,9 +293,11 @@ const clues=document.querySelectorAll(".clue");
 const signup=document.getElementById("signup");
 const glitch=document.querySelector(".glitch");
 
+/* raise ripcord to sit between text lines */
+
 setTimeout(()=>{
-handleWrapper.style.top="52vh";
-wire.style.height="52vh";
+handleWrapper.style.top="46vh";
+wire.style.height="46vh";
 },100);
 
 function updateWire(){
@@ -347,9 +344,17 @@ let t0=null;
 
 function pulse(ts){
 if(!t0)t0=ts;
+
 let s=(Math.sin((ts-t0)/600)+1)/2;
-clue.style.opacity=.85;
-clue.style.textShadow=`0 0 ${8*s}px #ffd23f`;
+
+/* fade white → hazard yellow */
+
+let yellow=`rgba(255,215,0,${s})`;
+let white=`rgba(255,255,255,${1-s})`;
+
+clue.style.opacity=.9;
+clue.style.textShadow=`0 0 ${12*s}px ${yellow}, 0 0 ${6*(1-s)}px ${white}`;
+
 requestAnimationFrame(pulse);
 }
 
@@ -357,7 +362,7 @@ pulse();
 
 i=(i+1)%clues.length;
 
-setTimeout(glow,1400);
+setTimeout(glow,1500);
 
 }
 
